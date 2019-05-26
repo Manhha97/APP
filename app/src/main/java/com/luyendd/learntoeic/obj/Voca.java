@@ -1,6 +1,9 @@
 package com.luyendd.learntoeic.obj;
 
-public class Voca {
+import java.io.Serializable;
+
+public class Voca implements Serializable {
+
     private int id, topic, id_temp;
 
     private String vocabulary, vocalization, explaination, translate, exmaple, exmample_translate;
@@ -21,6 +24,10 @@ public class Voca {
         this.favorite = favorite;
     }
 
+    public Voca(int id, String vocalization){
+        this.id = id;
+        this.vocalization = vocalization;
+    }
     public Voca() {
     }
 
