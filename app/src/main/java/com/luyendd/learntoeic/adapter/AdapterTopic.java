@@ -92,10 +92,10 @@ public class AdapterTopic extends BaseAdapter {
             public void onClick(View v) {
                 if (topic.getFavourite() == 1) {
                     topic.setFavourite(0);
-                    cdb.UpdateTopicFavourite(topic);
+                    cdb.UpdateTopic(topic);
                 }else {
                     topic.setFavourite(1);
-                    cdb.UpdateTopicFavourite(topic);
+                    cdb.UpdateTopic(topic);
                 }
                 //Cap nhat ui
                 notifyDataSetChanged();
@@ -106,13 +106,21 @@ public class AdapterTopic extends BaseAdapter {
             @Override
             public void onClick(View v) {
                 Log.d("ABC", "convertView_ONCLICK");
+                if (topic.getIsActive() != 1) {
+                    Log.d("ABC", "[Update Topic Active]");
+                    topic.setIsActive(1);
+                    cdb.UpdateTopic(topic);
+                }
+
                 Intent i = new Intent(context, VocaDetailsActivity.class);
                 i.putExtra(Const.TOPIC_ID, topic.getId());
                 i.putExtra(Const.TOPIC_NAME, topic.getTranslate());
                 context.startActivity(i);
             }
         });
-        Log.d("ABC", "___" + topic.getPass() +"___" + topic.getNotPass());
+        Log.d("ABC", "[TAG]" + topic.getTranslate() + "isActive: " +
+                topic.getIsActive() + "...." + topic.getLevel1() + "///"
+                + topic.getLevel2() + "///" + topic.getLevel3());
         return convertView;
     }
 

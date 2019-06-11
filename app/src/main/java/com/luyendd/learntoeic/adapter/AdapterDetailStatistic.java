@@ -18,17 +18,18 @@ import com.luyendd.learntoeic.ConnectDataBase;
 import com.luyendd.learntoeic.R;
 import com.luyendd.learntoeic.activity.VocaDetailsActivity;
 import com.luyendd.learntoeic.obj.Topic;
+import com.luyendd.learntoeic.obj.TopicStatistical;
 import com.luyendd.learntoeic.utils.Const;
 
 import java.util.List;
 
-public class AdapterMainStatistic extends BaseAdapter {
+public class AdapterDetailStatistic extends BaseAdapter {
 
     Context context;
-    List<Topic> topicList;
+    List<TopicStatistical> topicList;
     ViewHolderTopic vht;
     private ConnectDataBase cdb;
-    public AdapterMainStatistic(Context context, List<Topic> topicList){
+    public AdapterDetailStatistic(Context context, List<TopicStatistical> topicList){
         this.context = context;
         this.topicList = topicList;
         cdb = new ConnectDataBase(context);
@@ -40,7 +41,7 @@ public class AdapterMainStatistic extends BaseAdapter {
     }
 
     @Override
-    public Topic getItem(int position) {
+    public TopicStatistical getItem(int position) {
         return topicList.get(position);
     }
 
@@ -62,12 +63,16 @@ public class AdapterMainStatistic extends BaseAdapter {
             vht.tvPass = convertView.findViewById(R.id.tv_pass);
             vht.tvNotPass = convertView.findViewById(R.id.tv_not_pass);
             vht.mProgress = convertView.findViewById(R.id.pb_media_progress);
+            vht.tvLevel1 = convertView.findViewById(R.id.tv_quiz_level1);
+            vht.tvLevel2 = convertView.findViewById(R.id.tv_quiz_level2);
+            vht.tvLevel3 = convertView.findViewById(R.id.tv_quiz_level3);
+            vht.tvTotalQuiz = convertView.findViewById(R.id.tv_total_quiz);
             convertView.setTag(vht);
         }else{
             vht = (ViewHolderTopic) convertView.getTag();
         }
 
-        final Topic topic = topicList.get(position);
+        final TopicStatistical topic = topicList.get(position);
         RequestOptions options = new RequestOptions();
         options.centerCrop();
         options.fitCenter();
@@ -86,46 +91,37 @@ public class AdapterMainStatistic extends BaseAdapter {
             vht.btnFavorite.setBackground(context.getDrawable(R.drawable.ic_not_favorite));
         }
 
-        vht.btnFavorite.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (topic.getFavourite() == 1) {
-                    topic.setFavourite(0);
-                    cdb.UpdateTopicFavourite(topic);
-                }else {
-                    topic.setFavourite(1);
-                    cdb.UpdateTopicFavourite(topic);
-                }
-                //Cap nhat ui
-                notifyDataSetChanged();
 
-            }
-        });
-//        convertView.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                Log.d("ABC", "convertView_ONCLICK");
-//                Intent i = new Intent(context, VocaDetailsActivity.class);
-//                i.putExtra(Const.TOPIC_ID, topic.getId());
-//                i.putExtra(Const.TOPIC_NAME, topic.getTranslate());
-//                context.startActivity(i);
-//            }
-//        });
 
-        vht.tvPass.setText("Pass: " + topic.getPass());
-        vht.tvNotPass.setText("Not pass: " + topic.getNotPass());
-        Log.d("ABC", "___" + topic.getPass() +"___" + topic.getNotPass());
-        int total = topic.getPass() + topic.getNotPass();
-        float process = Math.round(topic.getPass() * 1.0 * 100 / total);
-        Log.d("ABC_process", "___" + process);
-        vht.mProgress.setProgress((int)Math.round(process));
+        vht.tvPass.setText("Pass: " + topic.getLevel1() + "----" + topic.getLevel2() + "----" + topic.getLevel3());
+        vht.tvLevel1.setText("Mức 1: " + topic.getLevel1() );
+        vht.tvLevel2.setText("Mức 2: " + topic.getLevel2() );
+        vht.tvLevel3.setText("Mức 3: " + topic.getLevel3() );
+        int totalQuiz = topic.getLevel1() + topic.getLevel2() + topic.getLevel3();
+        vht.tvTotalQuiz.setText("Tổng số bài quiz: " + totalQuiz );
+
+        vht.tvNotPass.setText("Số từ đã học: " + topic.getLearnPerTotal());
+        handleShowProcessPercent(vht.mProgress, topic.getLearnPerTotal());
         return convertView;
     }
 
     public class ViewHolderTopic{
         ImageView iv;
-        TextView tv, tvPass, tvNotPass;
+        TextView tv, tvPass, tvNotPass, tvLevel1, tvLevel2, tvLevel3, tvTotalQuiz;
         Button btnFavorite;
         ProgressBar mProgress;
     }
+
+    private void handleShowProcessPercent(ProgressBar progressBar, String learnPerTotal){
+        int lenght = learnPerTotal.length();
+        int learn = Integer.parseInt(learnPerTotal.substring(0, learnPerTotal.indexOf("/")));
+        int total = Integer.parseInt(learnPerTotal.substring(learnPerTotal.indexOf("/") + 1, lenght));
+
+        float process = Math.round(learn * 1.0 * 100 / total);
+        progressBar.setProgress((int)Math.round(process));
+
+    }
+
+
+
 }
